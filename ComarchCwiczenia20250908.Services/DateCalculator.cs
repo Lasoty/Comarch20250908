@@ -11,4 +11,17 @@ public class DateCalculator
 
         return date;
     }
+
+    public IEnumerable<DateTime> WeekDaysInMonth(int month, int year)
+    {
+        List<DateTime> daysInMonth = [];
+        var date = new DateTime(year, month, 1);
+        while (date.Month == month)
+        {
+            if (date.DayOfWeek is DayOfWeek.Saturday or DayOfWeek.Sunday)
+                daysInMonth.Add(date);
+            date = date.AddDays(1);
+        }
+        return daysInMonth;
+    }
 }

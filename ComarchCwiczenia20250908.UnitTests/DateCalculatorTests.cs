@@ -94,4 +94,22 @@ public class DateCalculatorTests
     {
         Console.WriteLine("OneTimeTearDown");
     }
+
+
+
+    [Test]
+    public void WeekDaysInMonth_Should_ReturnsCorrectWeekendDays()
+    {
+        int month = 9;
+
+        IEnumerable<DateTime> actual = cut.WeekDaysInMonth(month, 2025);
+
+        Assert.That(actual, Does.Contain(new DateTime(2025, 9, 6)));
+        Assert.That(actual, Does.Contain(new DateTime(2025,9,28)));
+        Assert.That(actual, Is.All.GreaterThan(
+            new DateTime(2025, 9, 1))
+            .And.All.LessThanOrEqualTo(new DateTime(2025, 9, 28)));
+
+        Assert.That(actual, Has.Exactly(1).EqualTo(new DateTime(2025, 9, 6)));
+    }
 }
