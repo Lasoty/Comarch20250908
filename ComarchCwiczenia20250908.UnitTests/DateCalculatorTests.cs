@@ -7,6 +7,13 @@ public class DateCalculatorTests
 {
     private DateCalculator cut = null!;
 
+    private static object[] DateTimes =
+    [
+        new object[] {new DateTime(2025,09,05), new DateTime(2025, 09, 08) },
+        new object[] {new DateTime(2025,09,06), new DateTime(2025, 09, 08) },
+        new object[] {new DateTime(2025,09,07), new DateTime(2025, 09, 08) }
+    ];
+
     [OneTimeSetUp]
     public void OneTimeSetUp()
     {
@@ -19,25 +26,61 @@ public class DateCalculatorTests
         cut = new DateCalculator();
     }
 
-    [Test]
-    public void GetNextBusinessDay_Should_SkipWeekends()
+    [TestCase("2025-09-05 00:00:00", "2025-09-08 00:00:00")]
+    [TestCase("2025-09-06 00:00:00", "2025-09-08 00:00:00")]
+    [TestCase("2025-09-07 00:00:00", "2025-09-08 00:00:00")]
+    public void GetNextBusinessDay_Should_SkipWeekends(string sDate, string sExpected)
     {
         // Arrange
-        DateTime friday = new DateTime(2025, 9, 5); 
-        DateTime saturday = new DateTime(2025, 9, 6); 
-        DateTime sunday = new DateTime(2025, 9, 7); 
-        DateTime expected = new DateTime(2025, 9, 8);
+        DateTime inputData = DateTime.Parse(sDate); 
+        DateTime expected = DateTime.Parse(sExpected); 
 
         // Act
-        DateTime resultForFriday = cut.GetNextBusinessDay(friday);
-        DateTime resultForSaturday = cut.GetNextBusinessDay(saturday);
-        DateTime resultForSunday = cut.GetNextBusinessDay(sunday);
+        DateTime actual = cut.GetNextBusinessDay(inputData);
 
         // Assert
-        Assert.That(resultForFriday, Is.EqualTo(expected));
-        Assert.That(resultForSaturday, Is.EqualTo(expected));
-        Assert.That(resultForSunday, Is.EqualTo(expected));
+        Assert.That(actual, Is.EqualTo(expected));
+    }
 
+    [TestCaseSource(nameof(DateTimes))]
+    public void GetNextBusinessDay_Should_SkipWeekends2(DateTime inputData, DateTime expected)
+    {
+        // Act
+        DateTime actual = cut.GetNextBusinessDay(inputData);
+
+        // Assert
+        Assert.That(actual, Is.EqualTo(expected));
+    }
+
+    [Test]
+    public void GetNextBusinessDay_ShouldHandleLeapYear()
+    {
+        DateTime inputDay = new DateTime(2024, 2, 28);
+        DateTime expected = new DateTime(2024, 2, 29);
+
+        DateTime actual = cut.GetNextBusinessDay(inputDay);
+
+        Assert.That(actual, Is.EqualTo(expected));
+    }
+
+    [Test]
+    public void GetNextBusinessDay_ShouldNotChangeTimePart()
+    {
+        var time = new DateTime(2024, 2, 23, 15, 30, 0); // 15:30
+
+        DateTime actual = cut.GetNextBusinessDay(time);
+
+        Assert.That(actual.TimeOfDay, Is.EqualTo(time.TimeOfDay));
+    }
+
+    [Test]
+    public void GetNextBusinessDay_ShouldBeAfterInputDate()
+    {
+        var date = new DateTime(2024, 2, 23);
+
+        DateTime actual = cut.GetNextBusinessDay(date);
+
+        Assert.That(actual > date, Is.True);
     }
 
     [TearDown]
