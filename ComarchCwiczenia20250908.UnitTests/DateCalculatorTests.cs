@@ -112,4 +112,16 @@ public class DateCalculatorTests
 
         Assert.That(actual, Has.Exactly(1).EqualTo(new DateTime(2025, 9, 6)));
     }
+
+    [Test]
+    public void WeekDaysInMonth_WhenMonthLessThan_1_ShouldThrowsArgumentOutOfRangeException()
+    {
+        int month = 0;
+
+        Assert.That(
+            () => cut.WeekDaysInMonth(month, 2025), 
+            Throws.TypeOf<ArgumentOutOfRangeException>().With.Message.Contain("month")
+            );
+
+    }
 }

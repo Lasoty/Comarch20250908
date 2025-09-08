@@ -14,6 +14,9 @@ public class DateCalculator
 
     public IEnumerable<DateTime> WeekDaysInMonth(int month, int year)
     {
+        if (month < 1)
+            throw new ArgumentOutOfRangeException(nameof(month), $"Parameter {nameof(month)} cannot be less than 1.");
+
         List<DateTime> daysInMonth = [];
         var date = new DateTime(year, month, 1);
         while (date.Month == month)
