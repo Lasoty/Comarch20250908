@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="ComarchCwiczenia20250908.UnitTests" />
+  </ItemGroup>
+
 </Project>
