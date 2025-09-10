@@ -20,7 +20,7 @@ internal class InvoiceService
         _taxService = taxService;
         _discountService = discountService;
     }
-
+    
     public decimal CalculateTotal(decimal amount, string customerType)
     {
         var discount = _discountService.CalculateDiscount(amount, customerType);
@@ -47,7 +47,6 @@ internal class InvoiceService
             });
     }
 
-
     public Invoice CreateInvoice(string customerName, List<InvoiceItem>? items)
     {
         if (string.IsNullOrEmpty(customerName))
@@ -68,4 +67,34 @@ internal class InvoiceService
         };
 
     }
+
+
+}
+
+internal class InvoiceService2
+{
+    private readonly IInvoiceRepository _invoiceRepository;
+    private readonly IEmailSender _emailSender;
+
+    public InvoiceService2(IInvoiceRepository invoiceRepository, IEmailSender emailSender)
+    {
+        _invoiceRepository = invoiceRepository;
+        _emailSender = emailSender;
+    }
+
+    public void SaveInvoice(Invoice invoice)
+    {
+        _invoiceRepository.Save(invoice);
+        _emailSender.Send(invoice.CustomerEmail, "Invoice Created", "Your invoice has beed successfully created.");
+    }
+}
+
+public interface IInvoiceRepository
+{
+    void Save(Invoice item);
+}
+
+public interface IEmailSender
+{
+    void Send(string email, string subject, string body);
 }
