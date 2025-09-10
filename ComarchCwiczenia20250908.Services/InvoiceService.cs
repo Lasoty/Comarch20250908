@@ -46,4 +46,26 @@ internal class InvoiceService
                 new() { ProductName = "Tablet", Quantity = 3, UnitPrice = 300m },
             });
     }
+
+
+    public Invoice CreateInvoice(string customerName, List<InvoiceItem>? items)
+    {
+        if (string.IsNullOrEmpty(customerName))
+            throw new ArgumentException("Customer name cannot be empty.");
+
+        if (items == null || !items.Any())
+            throw new ArgumentException("Invoice must have at least one item.");
+
+        decimal totalAmount = items.Sum(l => l.UnitPrice * l.Quantity);
+
+        return new Invoice
+        {
+            Id = new Random().Next(1, 1000),
+            Amount = totalAmount,
+            IssueDate = DateTime.Now,
+            CustomerName = customerName,
+            Items = items
+        };
+
+    }
 }
