@@ -11,8 +11,22 @@ public class SeleniumTests
     [OneTimeSetUp]
     public void OneTimeSetUp()
     {
+        var options = new ChromeOptions();
+        options.AddArgument("headless"); //uruchamianie bez okienka
+        options.AddArgument("--disable-gpu");
+
+        options.AddArgument("--window-size=1920,1080");
+        options.AddArgument("--disable-extensions");
+        options.AddArgument("--allow-insecure-localhost");
+        options.AddArgument("--ignore-certificate-errors");
+        options.AddArgument("--lang=en-US");
+        options.AddArgument("--no-sandbox");
+        options.AddArgument("--disable-dev-shm-usage");
+        options.AddArgument("--disable-popup-blocking");
+
+
         new WebDriverManager.DriverManager().SetUpDriver(new WebDriverManager.DriverConfigs.Impl.ChromeConfig());
-        driver = new ChromeDriver();
+        driver = new ChromeDriver(options);
         driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(10);
     }
 
@@ -108,5 +122,18 @@ public class SeleniumTests
         // Sprawdzamy, czy wyświetlił się komunikat z wpisanym tekstem
         resultText = driver.FindElement(By.Id("result"));
         Assert.That(resultText.Text, Is.EqualTo("You entered: Test Selenium"), "Komunikat po akceptacji prompta jest nieprawidłowy!");
+    }
+
+    [Test]
+    public void DynamiLoadingTest()
+    {
+        driver.Navigate().GoToUrl("https://the-internet.herokuapp.com/dynamic_loading/1");
+        var startButton = driver.FindElement(By.XPath("//*[@id=\"start\"]/button"));
+        startButton.Click();
+
+        WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
+        var loadedElement = wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementIsVisible(By.Id("finish")));
+
+        Assert.That(loadedElement.Text, Is.EqualTo("Hello World!"));
     }
 }
